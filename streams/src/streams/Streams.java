@@ -71,7 +71,20 @@ public class Streams {
                                 fout.close();
                             } 
                         }catch(FileNotFoundException ex){
-                            System.err.println("Fichero no encontrado");
+                            if (ruta != "") {
+                                try {
+                                    throw new excepcionFNF(333);
+                                } catch (excepcionFNF exNueva) {
+                                    try {
+                                        System.out.println(exNueva.getMensaje());
+                                        escribirErrores(exNueva.getMensaje());
+                                    } catch (Exception ex1) {
+                                        Logger.getLogger(Streams.class.getName()).log(Level.SEVERE, null, ex1);
+                                    }
+                                }
+                            } else {
+                                System.err.println("Ruta no introducida");
+                            }
                         }catch(IOException ex2){
                             System.err.println(ex2.getMessage()); 
                         }
@@ -110,7 +123,9 @@ public class Streams {
                                         Logger.getLogger(Streams.class.getName()).log(Level.SEVERE, null, ex1);
                                     }
                                 }
-                            }
+                            }else{
+                                System.err.println("Ruta no introducida");
+                            }    
                         }catch(IOException ex2){
                             System.err.println(ex2.getMessage()); 
                         }
@@ -139,7 +154,20 @@ public class Streams {
                                 escritorMasMejor.close();
                             }
                         }catch(FileNotFoundException ex){
-                            System.err.println("Fichero no encontrado");
+                            if (ruta != null) {
+                                try {
+                                    throw new excepcionFNF(333);
+                                } catch (excepcionFNF exNueva) {
+                                    try {
+                                        System.out.println(exNueva.getMensaje());
+                                        escribirErrores(exNueva.getMensaje());
+                                    } catch (Exception ex1) {
+                                        Logger.getLogger(Streams.class.getName()).log(Level.SEVERE, null, ex1);
+                                    }
+                                }
+                            } else {
+                                System.err.println("Ruta no introducida");
+                            }
                         }catch(IOException ex2){
                             System.err.println(ex2.getMessage()); 
                         }
@@ -208,10 +236,15 @@ public class Streams {
     }
     
     public static void escribirErrores(String mensajeDeError) throws Exception{
-        File fin=new File("C:\\Users\\ADRI\\Desktop\\Errores.txt");
-        BufferedWriter escritor=new BufferedWriter(new FileWriter (fin));
-        Date fecha=new Date();
-        escritor.append("\n"+mensajeDeError+""+fecha); 
+        try{    
+            File finErrores=new File("C:\\Users\\ADRI\\Desktop\\Errores.txt");
+            FileWriter escritorErrores=new FileWriter (finErrores, true);
+            Date fecha=new Date();
+            escritorErrores.write("\n"+mensajeDeError+" "+fecha.toString()); 
+            escritorErrores.close();
+        }catch(IOException ex){
+            System.err.println("Error con fichero TXT");
+        }    
     }
 }
   
