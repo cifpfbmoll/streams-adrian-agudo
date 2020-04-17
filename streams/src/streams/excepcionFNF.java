@@ -5,6 +5,11 @@
  */
 package streams;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Date;
+
 
 
 /**
@@ -26,7 +31,7 @@ public class excepcionFNF extends Exception{
     public excepcionFNF(int codError) {
         if (codError == 333){
             this.setMensaje("No se encuentra el fichero");
-        }
+        }    
     }
     
     public String getMensaje() {
@@ -44,4 +49,16 @@ public class excepcionFNF extends Exception{
     public void setCodigoError(int codError) {
         this.codigoError = codigoError;
     }
+    
+    public void escribirErrores(String mensajeDeError,String stacktrace)throws IOException{
+            File finErrores=new File("Errores.txt");
+            if(!finErrores.exists()){
+                finErrores.createNewFile();
+            }
+            FileWriter escritorErrores=new FileWriter (finErrores, true);
+            Date fecha=new Date();
+            escritorErrores.write("\n"+mensajeDeError+" "+fecha.toString()+" "+stacktrace+"\n"); 
+            escritorErrores.close();  
+    }
 }
+        
