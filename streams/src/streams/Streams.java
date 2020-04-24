@@ -16,8 +16,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 
 /**
@@ -33,43 +32,31 @@ public class Streams {
      */
     public static void main(String[] args){
             int opcion=0; 
-            int caracter=0;
+            int opcion2=0; 
             String ruta="";
+            String rutaDestino="";
             String linea="";
             int i=0;
-            while (opcion !=4){
+            while (opcion !=5){
                 System.out.print("\n\nMENU"+"\n1.-Lectura y escritura del fichero de cartelera byte a byte (byte Streams).\n" +
                 "2.-Lectura y escritura de fichero de cartelera carácter a carácter (character Streams).\n" +
                 "3.-Lectura y escritura de fichero línea a línea con buffers (character Streams).\n" +
-                "4.- Salir" +
+                "4.-Tratamiento de Objetos.\n" +        
+                "5.- Salir" +
                 "\n\nSeleccionar opción: ");
                 Scanner lector=new Scanner (System.in);
                 opcion=Integer.parseInt(lector.nextLine());
-                if (opcion!=4){
-                    System.out.print("\nIntroducir ruta del fichero: ");
-                    ruta=lector.nextLine();
+                if (opcion!=4 || opcion!=5){
+                   ruta=pedirRutaOrigen(); 
                 }
                 switch (opcion){                        
                     case 1:
                         try{
-                            FileInputStream fin=new FileInputStream(ruta);
                             imprimirCabecera();
-                            caracter = fin.read();
-                            while (caracter!=-1){
-                                caracterAcaracter(caracter);
-                                caracter = fin.read();
-                            }
-                            contadorAlmo=0;
-                            caracter=0;
-                            fin.close();
+                            lectorXBytes(ruta);
                             linea=escribir();
                             if (escribirDoc){
-                                FileOutputStream fout=new FileOutputStream(ruta);
-                                for (i=0;i<linea.length();i++){
-                                    fout.write((int)linea.charAt(i));
-                                }
-                                escribirDoc=false;
-                                fout.close();
+                                escritorXBytes(ruta,linea);
                             } 
                         }catch(FileNotFoundException ex){
                             excepcion(333,ruta);
@@ -79,60 +66,51 @@ public class Streams {
                         break;
                     case 2:
                         try{
-                            File entrada=new File(ruta); 
-                            FileReader lectorFich=new FileReader(entrada);
                             imprimirCabecera();
-                            caracter = lectorFich.read();
-                            while (caracter!=-1){
-                                caracterAcaracter(caracter);
-                                caracter = lectorFich.read();
-                            }
-                            contadorAlmo=0;
-                            caracter=0;
-                            lectorFich.close();
+                            lectorXCaracteres(ruta);
                             linea = escribir();
                             if (escribirDoc) {
-                                FileWriter escritorFich=new FileWriter(entrada);
-                                for (i = 0; i < linea.length(); i++) {
-                                    escritorFich.write((int) linea.charAt(i));
-                                }
-                                escribirDoc = false;
-                                escritorFich.close();
+                                escritorXCaracteres(ruta,linea);
                             }                           
                         }catch(FileNotFoundException ex){
-                                excepcion(333,ruta);      
+                            excepcion(333,ruta);      
                         }catch(IOException ex2){
                             System.err.println(ex2.getMessage()); 
                         }
                         break;
                     case 3: 
                         try{
-                            File entrada=new File(ruta); 
-                            BufferedReader lectorMasMejor=new BufferedReader(new FileReader(entrada));
                             imprimirCabecera();
-                            linea=lectorMasMejor.readLine();
-                            while (linea != null){
-                                for (i=0;i<linea.length();i++){
-                                    caracterAcaracter((int)linea.charAt(i));
-                                }
-                                linea=lectorMasMejor.readLine();
-                            }
-                            contadorAlmo=0;
-                            caracter=0;
-                            linea="";
-                            lectorMasMejor.close();
+                            lectorLinea(ruta);
                             linea=escribir();
                             if (escribirDoc){
-                                BufferedWriter escritorMasMejor=new BufferedWriter(new FileWriter(entrada));
-                                escritorMasMejor.write(linea);      
-                                escribirDoc=false;
-                                escritorMasMejor.close();
+                                escritorLinea(ruta,linea);
                             }
                         }catch(FileNotFoundException ex){
                            excepcion(333,ruta);
                         }catch(IOException ex2){
                             System.err.println(ex2.getMessage()); 
                         }
+                        break;    
+                    case 4:
+                        while(opcion2!=5){
+                            System.out.println("1.- Lectura línea a línea y escritura con objetos (obteniendo ficheroSalObj). \n" +
+                            "2.- Lectura de objetos (leyendo ficheroSalObj) y escritura de objetos (obteniendo ficheroSalObj2).\n" +
+                            "3.- Lectura de objetos (leyendo ficheroSalObj2) y escritura por consola (comprobaremos por consola que nos ha escrito bien los objetos en los pasos anteriores).\n" +
+                            "4.- Lectura por consola y escritura de objetos.\n" +
+                            "5.- Volver al menú principal.");
+                            opcion2=Integer.parseInt(lector.nextLine());
+                            switch (opcion2){  
+                                case 1:
+                                    try{
+                                        ruta=pedirRutaOrigen();
+                                        BufferedReader lectorBuffer = new BufferedReader(new FileReader(ruta));
+                                    }catch(FileNotFoundException ex){
+                                        excepcion(333,ruta);
+                                    }
+                                    break;
+                            }          
+                        }    
                 }
             }
     }        
@@ -214,6 +192,91 @@ public class Streams {
         }
     }
     
+    public static void lectorXBytes(String ruta) throws FileNotFoundException,IOException{
+        FileInputStream fin=new FileInputStream(ruta);
+        int caracter; 
+        caracter = fin.read();
+        while (caracter!=-1){
+            caracterAcaracter(caracter);
+            caracter = fin.read();
+        }
+        contadorAlmo=0;
+        caracter=0;
+        fin.close();
+    }
+    
+    public static void escritorXBytes(String ruta, String linea) throws FileNotFoundException,IOException{
+        FileOutputStream fout = new FileOutputStream(ruta);
+        for (int i = 0; i < linea.length(); i++) {
+            fout.write((int) linea.charAt(i));
+        }
+        escribirDoc = false;
+        fout.close();
+    }
+    
+    public static void lectorXCaracteres(String ruta)throws FileNotFoundException,IOException{
+        int caracter;
+        File entrada = new File(ruta);
+        FileReader lectorFich = new FileReader(entrada);
+        caracter = lectorFich.read();
+        while (caracter != -1) {
+            caracterAcaracter(caracter);
+            caracter = lectorFich.read();
+        }
+        contadorAlmo = 0;
+        caracter = 0;
+        lectorFich.close();
+    } 
+    
+    public static void escritorXCaracteres(String ruta, String linea)throws FileNotFoundException,IOException{
+        File entrada = new File(ruta);
+        FileWriter escritorFich = new FileWriter(entrada);
+        for (int i = 0; i < linea.length(); i++) {
+            escritorFich.write((int) linea.charAt(i));
+        }
+        escribirDoc = false;
+        escritorFich.close();
+    } 
+    
+    public static void lectorLinea(String ruta)throws FileNotFoundException,IOException{
+        String linea;
+        File entrada = new File(ruta);
+        BufferedReader lectorMasMejor = new BufferedReader(new FileReader(entrada));
+        linea = lectorMasMejor.readLine();
+        while (linea != null) {
+            for (int i = 0; i < linea.length(); i++) {
+                caracterAcaracter((int) linea.charAt(i));
+            }
+            linea = lectorMasMejor.readLine();
+        }
+        contadorAlmo = 0;
+        linea = "";
+        lectorMasMejor.close();
+    }
+    
+    public static void escritorLinea(String ruta, String linea)throws FileNotFoundException,IOException{
+        File entrada = new File(ruta);
+        BufferedWriter escritorMasMejor = new BufferedWriter(new FileWriter(entrada));
+        escritorMasMejor.write(linea);
+        escribirDoc = false;
+        escritorMasMejor.close();
+    }
+    
+    public static String pedirRutaOrigen(){
+        String ruta="";
+        Scanner lector=new Scanner(System.in);
+        System.out.print("\nIntroducir ruta del fichero de Origen: ");
+        ruta=lector.nextLine();
+        return ruta;
+    }
+    
+    public static String pedirRutaDestino(){
+        String ruta="";
+        Scanner lector=new Scanner(System.in);
+        System.out.print("\nIntroducir ruta del fichero de Destino: ");
+        ruta=lector.nextLine();
+        return ruta;
+    }
 }
   
             
