@@ -14,8 +14,13 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.NotSerializableException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Arrays;
 import java.util.Scanner;
+
+
 
 
 
@@ -35,6 +40,7 @@ public class Streams {
             int opcion2=0; 
             String ruta="";
             String rutaDestino="";
+            Pelicula p=new Pelicula();
             String linea="";
             int i=0;
             while (opcion !=5){
@@ -104,11 +110,25 @@ public class Streams {
                                 case 1:
                                     try{
                                         ruta=pedirRutaOrigen();
-                                        BufferedReader lectorBuffer = new BufferedReader(new FileReader(ruta));
+                                        lectorLinea(ruta);
+                                        p.pedirPelicula();
+                                        ruta=pedirRutaDestino();
+                                        escritorObjetos(ruta,p);
                                     }catch(FileNotFoundException ex){
                                         excepcion(333,ruta);
+                                    }catch(IOException ex2){
+                                        System.out.println(ex2.getMessage());
                                     }
                                     break;
+                                case 2:
+                                    try{
+                                        ruta=pedirRutaOrigen();
+                                        lectorObjetos(ruta);
+                                    } catch (FileNotFoundException ex) {
+                                        excepcion(333, ruta);
+                                    } catch (IOException ex2) {
+                                        System.out.println(ex2.getMessage());
+                                    }
                             }          
                         }    
                 }
@@ -260,6 +280,29 @@ public class Streams {
         escritorMasMejor.write(linea);
         escribirDoc = false;
         escritorMasMejor.close();
+    }
+    
+    public static void escritorObjetos(String ruta,Pelicula p)throws IOException{
+        try {
+            ObjectOutputStream objSalida = new ObjectOutputStream(new FileOutputStream(ruta));
+            objSalida.writeObject(p);
+            objSalida.close();
+        } catch (FileNotFoundException ex) {
+            excepcion(555,ruta);
+        } catch(NotSerializableException ex2){
+            System.out.println(ex2.getMessage());
+        }
+    }
+    
+    public static void lectorObjetos(String ruta)throws FileNotFoundException, IOException{
+        ObjectInputStream objEntrada = new ObjectInputStream(new FileInputStream(ruta));
+        try {
+            objEntrada.readObject();
+            objEntrada.close();
+        } catch (ClassNotFoundException ex) {
+            System.err.print(ex.getMessage());
+        }
+        
     }
     
     public static String pedirRutaOrigen(){

@@ -30,8 +30,11 @@ public class excepcionFNF extends Exception{
     
     public excepcionFNF(int codError) {
         if (codError == 333){
-            this.setMensaje("No se encuentra el fichero");
+            this.setMensaje("No se encuentra el fichero origen");
         }    
+        else if (codError == 555){
+            this.setMensaje("No se encuentra fichero salida");
+        }
     }
     
     public String getMensaje() {
@@ -47,7 +50,7 @@ public class excepcionFNF extends Exception{
     }
 
     public void setCodigoError(int codError) {
-        this.codigoError = codigoError;
+        this.codigoError = codError;
     }
     
     public void escribirErrores(String mensajeDeError,String stacktrace)throws IOException{

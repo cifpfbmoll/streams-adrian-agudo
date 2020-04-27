@@ -1,2 +1,4 @@
 
 No se encuentra el fichero Fri Apr 17 17:44:41 CEST 2020 [streams.Streams.excepcion(Streams.java:205), streams.Streams.main(Streams.java:132)]
+
+No se encuentra el fichero origen Mon Apr 27 15:51:10 CEST 2020 [streams.Streams.excepcion(Streams.java:202), streams.Streams.main(Streams.java:127)]
